@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>焦彦铭 · Industrial Design Portfolio</title>
+  <meta name="description" content="焦彦铭 2023—2026 工业设计作品集" />
+  <style>
+
+:root {
+  --ink: #46464d;
+  --paper: #f7f7f5;
+  --accent: #ff641e;
+}
+
+* { box-sizing: border-box; }
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+button { color: inherit; font: inherit; }
+
+.portfolio-shell {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.slide-viewport {
+  position: absolute;
+  inset: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: none;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.slide-viewport::-webkit-scrollbar { display: none; }
+
+.slide-track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+}
+
+.slide {
+  display: grid;
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100dvh;
+  place-items: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background: var(--paper);
+}
+
+.slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.topbar {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(18px, 2.2vw, 36px) clamp(20px, 3vw, 54px);
+  pointer-events: none;
+}
+
+.brand,
+.menu-button,
+.bottom-controls,
+.navigation-hint {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.brand,
+.menu-button {
+  border: 0;
+  background: color-mix(in srgb, var(--paper) 76%, transparent);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.brand {
+  display: grid;
+  grid-template-columns: 8px auto;
+  column-gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  letter-spacing: 0.1em;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.brand small {
+  grid-column: 2;
+  margin-top: 1px;
+  color: #7d7d83;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+.brand-mark {
+  grid-row: 1 / 3;
+  width: 3px;
+  height: 25px;
+  background: var(--accent);
+}
+
+.menu-button {
+  display: grid;
+  grid-template-columns: auto 18px;
+  gap: 3px 12px;
+  align-items: center;
+  min-width: 88px;
+  padding: 12px 13px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.menu-button span { grid-row: 1 / 3; }
+
+.menu-button i {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  transition: transform 240ms ease;
+}
+
+.menu-button[aria-expanded="true"] i:first-of-type { transform: translateY(2px) rotate(45deg); }
+.menu-button[aria-expanded="true"] i:last-of-type { transform: translateY(-2px) rotate(-45deg); }
+
+.bottom-controls {
+  position: absolute;
+  z-index: 20;
+  bottom: clamp(18px, 2.5vw, 38px);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px;
+  border: 1px solid rgb(70 70 77 / 12%);
+  border-radius: 999px;
+  background: rgb(247 247 245 / 78%);
+  box-shadow: 0 12px 40px rgb(31 31 35 / 8%);
+  transform: translateX(-50%);
+}
+
+.bottom-controls > button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: white;
+  cursor: pointer;
+  font-size: 17px;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.bottom-controls > button:hover:not(:disabled) { transform: scale(1.07); }
+
+.bottom-controls > button:disabled {
+  opacity: 0.18;
+  cursor: default;
+}
+
+.page-status {
+  display: flex;
+  min-width: 112px;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-status strong { font-size: 16px; }
+
+.page-status em {
+  margin-left: 8px;
+  color: var(--accent);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.progress-track {
+  position: absolute;
+  z-index: 21;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgb(70 70 77 / 8%);
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 260ms ease;
+}
+
+.navigation-hint {
+  position: absolute;
+  z-index: 15;
+  right: clamp(22px, 3vw, 54px);
+  bottom: clamp(24px, 3vw, 46px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgb(247 247 245 / 72%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 300ms ease, transform 300ms ease;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.navigation-hint.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hint-line {
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.index-panel {
+  position: absolute;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  display: flex;
+  width: min(520px, 100vw);
+  height: 100%;
+  flex-direction: column;
+  padding: clamp(88px, 11vh, 128px) clamp(24px, 4vw, 54px) 34px;
+  background: rgb(247 247 245 / 97%);
+  box-shadow: -30px 0 80px rgb(24 24 28 / 10%);
+  transform: translateX(105%);
+  transition: transform 420ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.index-panel.is-open { transform: translateX(0); }
+
+.index-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgb(70 70 77 / 18%);
+  font-size: 9px;
+  letter-spacing: 0.17em;
+}
+
+.index-heading strong { color: var(--accent); }
+
+.chapter-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chapter-list button {
+  display: grid;
+  grid-template-columns: 34px 78px 1fr auto;
+  align-items: baseline;
+  padding: 14px 6px;
+  border: 0;
+  border-bottom: 1px solid rgb(70 70 77 / 10%);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: padding 180ms ease, color 180ms ease;
+}
+
+.chapter-list button:hover,
+.chapter-list button.active {
+  padding-left: 14px;
+  color: var(--accent);
+}
+
+.chapter-list button > span,
+.chapter-list small {
+  color: #96969a;
+  font-size: 9px;
+  letter-spacing: 0.11em;
+}
+
+.chapter-list strong { font-size: 22px; }
+.chapter-list i { font-style: normal; }
+
+.menu-scrim {
+  position: absolute;
+  z-index: 30;
+  inset: 0;
+  border: 0;
+  background: rgb(30 30 34 / 18%);
+  cursor: default;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.banming-slide {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  overflow: hidden;
+  background: white;
+}
+
+.banming-canvas {
+  container-type: size;
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  height: min(100dvh, calc(100vw * 9 / 16));
+  overflow: hidden;
+  background: #fff;
+  font-family: Arial, "PingFang SC", sans-serif;
+}
+
+.banming-canvas .banming-background {
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 125%;
+  height: 125%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.banming-edge-line {
+  position: absolute;
+  inset: 0 auto 0 3.125%;
+  width: 0.105%;
+  background: #44454b;
+}
+
+.banming-number {
+  position: absolute;
+  top: -0.6%;
+  left: 4.17%;
+  display: flex;
+  letter-spacing: -0.08em;
+  font-family: Arial, sans-serif;
+  font-size: 8.9cqh;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.banming-number span {
+  color: transparent;
+  -webkit-text-stroke: 0.16cqh #44454b;
+}
+
+.banming-number span:last-child {
+  margin-left: 0.03em;
+  -webkit-text-stroke-color: #7e8f40;
+}
+
+.banming-marker {
+  position: absolute;
+  top: 32.5%;
+  left: 9.9%;
+  width: 0.365%;
+  height: 3.52%;
+  background: #7e8f40;
+}
+
+.banming-canvas h2 {
+  position: absolute;
+  top: 31.45%;
+  left: 11.1%;
+  margin: 0;
+  color: #44454b;
+  font-family: Arial, "PingFang SC", sans-serif;
+  font-size: 4.63cqh;
+  font-weight: 800;
+  line-height: 1.16;
+}
+
+.banming-canvas > p {
+  position: absolute;
+  top: 40.65%;
+  left: 9.9%;
+  margin: 0;
+  color: #44454b;
+  font-size: 2.22cqh;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.banming-bars {
+  position: absolute;
+  top: 47.13%;
+  left: 1.04%;
+  display: grid;
+  gap: 1.3cqh;
+}
+
+.banming-bars i {
+  display: block;
+  width: 0.78cqw;
+  height: 0.46cqh;
+  background: #44454b;
+}
+
+.banming-bars i:nth-child(3) {
+  width: 1.04cqw;
+  background: #7e8f40;
+}
+
+.banming-footer {
+  position: absolute;
+  right: 5.05%;
+  bottom: 3.22%;
+  display: grid;
+  justify-items: end;
+  gap: 0.42cqh;
+  color: #44454b;
+  font-size: 1.48cqh;
+  font-weight: 500;
+}
+
+.banming-footer i {
+  display: block;
+  width: 3.44cqw;
+  height: 0.19cqh;
+  background: linear-gradient(90deg, #7e8f40, #cbcdcf);
+}
+
+.banming-scene-canvas .banming-scene-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.banming-right-line {
+  right: 3.125%;
+  left: auto;
+}
+
+.banming-scene-number {
+  right: 4.17%;
+  left: auto;
+}
+
+.banming-scene-footer i {
+  background: linear-gradient(90deg, #7e8f40, transparent);
+}
+
+@media (max-width: 720px) {
+  .topbar { padding: 14px; }
+  .brand { padding: 8px; }
+  .brand small,
+  .navigation-hint { display: none; }
+  .brand-mark { grid-row: auto; height: 14px; }
+  .menu-button { min-width: 78px; }
+  .bottom-controls { bottom: 16px; }
+  .bottom-controls > button { width: 34px; height: 34px; }
+  .page-status { min-width: 88px; }
+  .page-status em { display: none; }
+  .index-panel { padding: 76px 20px 24px; }
+  .chapter-list button { grid-template-columns: 30px 60px 1fr auto; padding-block: 12px; }
+  .chapter-list strong { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+
+</style>
+</head>
+<body>
+<main class="portfolio-shell">
+  <header class="topbar">
+    <button class="brand" id="brand" aria-label="返回封面"><span class="brand-mark"></span><span>JIAO YANMING</span><small>INDUSTRIAL DESIGN</small></button>
+    <button class="menu-button" id="menuButton" aria-expanded="false" aria-controls="portfolio-menu"><span>INDEX</span><i></i><i></i></button>
+  </header>
+  <div class="slide-viewport" id="viewport" aria-label="焦彦铭工业设计作品集"><div class="slide-track" id="track"></div></div>
+  <div class="navigation-hint is-visible" id="hint" aria-hidden="true"><span>SCROLL</span><span class="hint-line"></span><span>拖动 · 滚轮 · 方向键</span></div>
+  <nav class="bottom-controls" aria-label="作品集翻页">
+    <button id="prev" aria-label="上一页">←</button>
+    <div class="page-status"><strong id="current">01</strong><span>/</span><span>37</span><em id="chapter">INTRO</em></div>
+    <button id="next" aria-label="下一页">→</button>
+  </nav>
+  <div class="progress-track"><span id="progress"></span></div>
+  <aside id="portfolio-menu" class="index-panel">
+    <div class="index-heading"><span>PORTFOLIO INDEX</span><strong>2023—2026</strong></div>
+    <div class="chapter-list" id="chapterList"></div>
+  </aside>
+  <button class="menu-scrim" id="scrim" aria-label="关闭目录" hidden></button>
+</main>
+<script>
+const slides = [
+  ["portfolio/01-cover.png","封面","INTRO"],["portfolio/02-resume.png","简历","INTRO"],["portfolio/03-contents.png","目录","INTRO"],
+  ...Array.from({length:10},(_,i)=>[`portfolio/${String(i+4).padStart(2,"0")}-03-${i}.png`,`03-${i}`,"01"]),
+  ...Array.from({length:9},(_,i)=>[`portfolio/${String(i+14).padStart(2,"0")}-02-${i}.png`,`02-${i}`,"02"]),
+  ...Array.from({length:9},(_,i)=>[`portfolio/${String(i+23).padStart(2,"0")}-01-${i}.png`,`01-${i}`,"03"]),
+  ...Array.from({length:5},(_,i)=>[`portfolio/${String(i+32).padStart(2,"0")}-06-${i}.png`,`06-${i}`,"04"]),
+  ["portfolio/37-back-cover.png","封底","END"]
+];
+const chapters=[["封面","Portfolio",0],["简历","About",1],["目录","Contents",2],["01","YINGBO FC",3],["02","OCEANSENTRY",13],["03","BANMING",22],["04","OTHER WORKS",31],["封底","Contact",36]];
+const track=document.getElementById("track"),viewport=document.getElementById("viewport");
+const radio05=`<div class="banming-slide" role="img" aria-label="Banming Radio，让温和陪伴，与日常声响相遇"><div class="banming-canvas"><img class="banming-background" src="portfolio/banming-radio-hd.png" alt=""><div class="banming-edge-line"></div><div class="banming-number"><span>0</span><span>3</span></div><div class="banming-marker"></div><h2>Banming Radio</h2><p>让温和陪伴，与日常声响相遇</p><div class="banming-bars"><i></i><i></i><i></i><i></i></div><div class="banming-footer"><span>Radio 05</span><i></i></div></div></div>`;
+const radio07=`<div class="banming-slide" role="img" aria-label="Banming Radio 家居场景展示"><div class="banming-canvas banming-scene-canvas"><img class="banming-scene-background" src="portfolio/banming-radio-scene-hd.jpg" alt=""><div class="banming-edge-line"></div><div class="banming-edge-line banming-right-line"></div><div class="banming-number banming-scene-number"><span>0</span><span>3</span></div><div class="banming-bars"><i></i><i></i><i></i><i></i></div><div class="banming-footer banming-scene-footer"><span>Radio 07</span><i></i></div></div></div>`;
+slides.forEach(([src,label],i)=>{
+  const section=document.createElement("section"); section.className="slide"; section.setAttribute("aria-label",`${i+1}. ${label}`);
+  section.innerHTML=label==="01-5"?radio05:label==="01-7"?radio07:`<img src="${src}" alt="焦彦铭工业设计作品集：${label}" width="1920" height="1080" loading="${i<2?"eager":"lazy"}" draggable="false">`;
+  track.appendChild(section);
+});
+chapters.forEach(([label,detail,index],i)=>{
+  const button=document.createElement("button"); button.innerHTML=`<span>${String(i+1).padStart(2,"0")}</span><strong>${label}</strong><small>${detail}</small><i>↗</i>`;
+  button.addEventListener("click",()=>goTo(index)); document.getElementById("chapterList").appendChild(button);
+});
+let current=0,raf=null;
+const currentEl=document.getElementById("current"),chapterEl=document.getElementById("chapter"),progressEl=document.getElementById("progress");
+const prev=document.getElementById("prev"),next=document.getElementById("next"),panel=document.getElementById("portfolio-menu"),scrim=document.getElementById("scrim"),menuButton=document.getElementById("menuButton"),hint=document.getElementById("hint");
+function update(){
+  currentEl.textContent=String(current+1).padStart(2,"0"); chapterEl.textContent=slides[current][2]; progressEl.style.width=`${(current+1)/slides.length*100}%`;
+  prev.disabled=current===0; next.disabled=current===slides.length-1;
+  [...document.querySelectorAll(".chapter-list button")].forEach((b,i)=>b.classList.toggle("active",current>=chapters[i][2]&&current<(chapters[i+1]?.[2]??slides.length)));
+}
+function closeMenu(){panel.classList.remove("is-open");scrim.hidden=true;menuButton.setAttribute("aria-expanded","false");menuButton.querySelector("span").textContent="INDEX";}
+function goTo(i){current=Math.max(0,Math.min(slides.length-1,i));viewport.scrollTo({left:viewport.clientWidth*current,behavior:"smooth"});hint.classList.remove("is-visible");closeMenu();update();}
+viewport.addEventListener("scroll",()=>{if(raf)return;raf=requestAnimationFrame(()=>{current=Math.round(viewport.scrollLeft/viewport.clientWidth);update();raf=null;});});
+viewport.addEventListener("wheel",e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&!e.ctrlKey){e.preventDefault();viewport.scrollBy({left:e.deltaY});hint.classList.remove("is-visible");}},{passive:false});
+prev.onclick=()=>goTo(current-1);next.onclick=()=>goTo(current+1);document.getElementById("brand").onclick=()=>goTo(0);
+menuButton.onclick=()=>{const open=!panel.classList.contains("is-open");panel.classList.toggle("is-open",open);scrim.hidden=!open;menuButton.setAttribute("aria-expanded",String(open));menuButton.querySelector("span").textContent=open?"CLOSE":"INDEX";};
+scrim.onclick=closeMenu;
+addEventListener("keydown",e=>{if(["ArrowRight","ArrowDown","PageDown"," "].includes(e.key)){e.preventDefault();goTo(current+1)}else if(["ArrowLeft","ArrowUp","PageUp"].includes(e.key)){e.preventDefault();goTo(current-1)}else if(e.key==="Home")goTo(0);else if(e.key==="End")goTo(slides.length-1);else if(e.key==="Escape")closeMenu();});
+setTimeout(()=>hint.classList.remove("is-visible"),3600);update();
+</script>
+</body>
+</html>
